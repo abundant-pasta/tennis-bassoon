@@ -4,3 +4,12 @@ __pycache__/
 data/
 runs/
 outputs/
+!data/
+!data/tennis/
+!data/tennis/features/
+!data/tennis/features/matches.parquet
+!data/tennis/features/rankings.parquet
+!data/tennis/model/
+!data/tennis/model/**
+!data/tennis/raw/
+!data/tennis/raw/atp_players.csv
