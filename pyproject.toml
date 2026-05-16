@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tennis-bassoon"
+version = "0.1.0"
+description = "ATP tennis modeling and shadow-mode recommendation pipeline."
+requires-python = ">=3.11"
+dependencies = [
+  "joblib==1.5.3",
+  "matplotlib==3.10.1",
+  "numpy==2.2.4",
+  "openpyxl==3.1.5",
+  "optuna==4.8.0",
+  "pandas==2.2.3",
+  "pyarrow==21.0.0",
+  "scikit-learn==1.8.0",
+  "scipy==1.15.2",
+  "xgboost==3.2.0",
+  "xlrd==2.0.2",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest==9.0.2",
+]
+gcp = [
+  "google-cloud-storage>=2.19.0",
+]
+
+[project.scripts]
+tennis-train = "src.cli:tennis_train_main"
+tennis-backtest = "src.cli:tennis_backtest_main"
+tennis-backtest-2026-ytd = "src.cli:tennis_backtest_2026_ytd_main"
+tennis-daily-run = "src.cli:tennis_daily_run_main"
+tennis-clv = "src.cli:tennis_clv_main"
+tennis-holdout-suite = "src.cli:tennis_holdout_suite_main"
+
+[tool.setuptools]
+packages = ["src", "src.data", "src.features", "src.model", "src.pipeline", "src.runtime"]
+py-modules = ["config_tennis", "run_pipeline"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

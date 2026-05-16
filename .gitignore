@@ -1,0 +1,14 @@
+__pycache__/
+.pytest_cache/
+*.pyc
+
+logs/
+outputs/
+runs/
+
+data/tennis/ledger/
+data/tennis/oos/
+data/tennis/features/features.parquet
+data/tennis/features/odds.parquet
+data/tennis/raw/*.csv
+!data/tennis/raw/atp_players.csv

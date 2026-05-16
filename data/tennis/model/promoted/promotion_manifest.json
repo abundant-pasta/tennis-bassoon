@@ -1,0 +1,140 @@
+{
+  "promoted_utc": "2026-04-29T00:12:41.969306+00:00",
+  "bundle_version": "bootstrap_current",
+  "gate_report": {
+    "passed": true,
+    "checks": {
+      "val_auc": true,
+      "val_log_loss": true,
+      "oos_flat_roi": true,
+      "ytd_flat_roi": true
+    }
+  },
+  "oos_summary": {
+    "oos_years": [
+      2022,
+      2023,
+      2024
+    ],
+    "edge_threshold": 0.06,
+    "kelly_fraction": 0.25,
+    "starting_bankroll": 1000.0,
+    "total_matches_with_odds": 6490,
+    "governance_blocked": 857,
+    "flat_bet": {
+      "bets": 2818,
+      "wins": 1700,
+      "win_rate": 0.6033,
+      "units_profit": 534.84,
+      "flat_roi": 0.1898
+    },
+    "total_bets": 2818,
+    "win_rate": 0.6033,
+    "total_profit": 7217815.67,
+    "roi": 0.2426,
+    "final_bankroll": 7218815.83,
+    "surface_breakdown": {
+      "Clay": {
+        "bets": 906,
+        "wins": 534,
+        "profit": 927366.85,
+        "roi": 0.214
+      },
+      "Grass": {
+        "bets": 295,
+        "wins": 146,
+        "profit": 4476.11,
+        "roi": 0.0024
+      },
+      "Hard": {
+        "bets": 1617,
+        "wins": 1020,
+        "profit": 6285972.71,
+        "roi": 0.2667
+      }
+    },
+    "level_breakdown": {
+      "A": {
+        "bets": 1710,
+        "wins": 1021,
+        "profit": 3054214.98,
+        "roi": 0.1802
+      },
+      "C": {
+        "bets": 9,
+        "wins": 3,
+        "profit": -77441.51,
+        "roi": -0.9718
+      },
+      "F": {
+        "bets": 13,
+        "wins": 8,
+        "profit": 572008.95,
+        "roi": 0.8349
+      },
+      "G": {
+        "bets": 418,
+        "wins": 250,
+        "profit": 438371.59,
+        "roi": 0.1458
+      },
+      "M": {
+        "bets": 668,
+        "wins": 418,
+        "profit": 3230661.66,
+        "roi": 0.3578
+      }
+    },
+    "edge_bucket_breakdown": {
+      "06-08%": {
+        "bets": 739,
+        "wins": 445,
+        "roi": 0.2402
+      },
+      "08-10%": {
+        "bets": 572,
+        "wins": 352,
+        "roi": 0.1614
+      },
+      "10-12%": {
+        "bets": 408,
+        "wins": 254,
+        "roi": 0.1095
+      },
+      "12%+": {
+        "bets": 1099,
+        "wins": 649,
+        "roi": 0.3358
+      }
+    },
+    "kelly_path": "data/tennis/oos/kelly_oos_2022_2023_2024.csv",
+    "scored_path": "data/tennis/oos/scored_oos_2022_2023_2024.csv"
+  },
+  "ytd_summary": {
+    "oos_years": [
+      2026
+    ],
+    "backtest_note": "Approximate 2026 YTD backtest using tennis-data match history for 2025-2026.",
+    "model_artifact": "data/tennis/model/tennis_xgb.pkl",
+    "feature_medians_artifact": "data/tennis/model/tennis_feature_medians.pkl",
+    "edge_threshold": 0.06,
+    "kelly_fraction": 0.25,
+    "starting_bankroll": 1000.0,
+    "total_matches_with_odds": 912,
+    "governance_blocked": 51,
+    "flat_bet": {
+      "bets": 526,
+      "wins": 292,
+      "win_rate": 0.5551,
+      "units_profit": 35.37,
+      "flat_roi": 0.0672
+    },
+    "total_bets": 526,
+    "win_rate": 0.5551,
+    "total_profit": 1166.51,
+    "roi": 0.1396,
+    "final_bankroll": 2166.65,
+    "scored_path": "data/tennis/oos/scored_oos_2026_ytd.csv",
+    "kelly_path": "data/tennis/oos/kelly_oos_2026_ytd.csv"
+  }
+}

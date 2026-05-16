@@ -1,0 +1,20 @@
+Metadata-Version: 2.4
+Name: tennis-bassoon
+Version: 0.1.0
+Summary: ATP tennis modeling and shadow-mode recommendation pipeline.
+Requires-Python: >=3.11
+Requires-Dist: joblib==1.5.3
+Requires-Dist: matplotlib==3.10.1
+Requires-Dist: numpy==2.2.4
+Requires-Dist: openpyxl==3.1.5
+Requires-Dist: optuna==4.8.0
+Requires-Dist: pandas==2.2.3
+Requires-Dist: pyarrow==21.0.0
+Requires-Dist: scikit-learn==1.8.0
+Requires-Dist: scipy==1.15.2
+Requires-Dist: xgboost==3.2.0
+Requires-Dist: xlrd==2.0.2
+Provides-Extra: dev
+Requires-Dist: pytest==9.0.2; extra == "dev"
+Provides-Extra: gcp
+Requires-Dist: google-cloud-storage>=2.19.0; extra == "gcp"

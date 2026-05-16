@@ -1,0 +1,54 @@
+{
+  "val_accuracy": 0.6883,
+  "val_log_loss_raw": 0.5794,
+  "val_log_loss_cal": 0.5825,
+  "val_log_loss_selected": 0.5794,
+  "val_brier_score": 0.1987,
+  "val_auc_roc": 0.7268,
+  "rank_baseline_accuracy": 0.634,
+  "n_train": 137760,
+  "n_val": 12725,
+  "n_features": 40,
+  "best_params": {
+    "n_estimators": 646,
+    "max_depth": 4,
+    "learning_rate": 0.06897647591254691,
+    "subsample": 0.9888243369182383,
+    "colsample_bytree": 0.7674175819417577,
+    "min_child_weight": 3,
+    "reg_alpha": 0.6931566277906344,
+    "reg_lambda": 0.5322929381661461
+  },
+  "temperature": 0.9992,
+  "calibration_selected": false,
+  "calibration_mode": "raw_identity",
+  "train_years": [
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021
+  ],
+  "val_year": 2022,
+  "oos_years": [
+    2023
+  ],
+  "cal_years": [
+    2017,
+    2018,
+    2019,
+    2020,
+    2021
+  ],
+  "artifact_role": "holdout",
+  "generated_utc": "2026-04-29T02:11:52.943092+00:00"
+}

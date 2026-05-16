@@ -1,0 +1,6 @@
+[console_scripts]
+tennis-backtest = src.cli:tennis_backtest_main
+tennis-backtest-2026-ytd = src.cli:tennis_backtest_2026_ytd_main
+tennis-daily-run = src.cli:tennis_daily_run_main
+tennis-holdout-suite = src.cli:tennis_holdout_suite_main
+tennis-train = src.cli:tennis_train_main
