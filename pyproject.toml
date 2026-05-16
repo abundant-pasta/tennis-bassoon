@@ -17,7 +17,7 @@ dependencies = [
   "pyarrow==21.0.0",
   "scikit-learn==1.8.0",
   "scipy==1.15.2",
-  "xgboost==3.2.0",
+  "xgboost==3.0.5",
   "xlrd==2.0.2",
 ]
 
