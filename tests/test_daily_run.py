@@ -368,6 +368,11 @@ def test_close_snapshot_updates_shadow_ledger(tmp_path, monkeypatch):
     assert pd.notna(ledger.loc[0, "closing_pick_market_prob"])
     assert pd.notna(ledger.loc[0, "close_snapshot_utc"])
     assert bool(ledger.loc[0, "beat_close"])
+    assert "_close_snapshot_utc_new" not in ledger.columns
+
+    close_manifest_rerun = run_daily("2026-01-10", mode="close_snapshot")
+    assert close_manifest_rerun["status"] == "success"
+    assert close_manifest_rerun["row_counts"]["shadow_ledger_close_rows"] == 1
 
 
 def test_shadow_ledger_rerun_replaces_same_match_side(tmp_path, monkeypatch):

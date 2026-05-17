@@ -162,7 +162,18 @@ def finalize_close_snapshot(run_date: str, close_snapshot_path: Path) -> dict[st
         raise ValueError(f"No shadow ledger rows found for run_date={run_date}.")
 
     close_snapshot = pd.read_csv(close_snapshot_path)
-    merged = ledger.loc[target_mask].merge(
+    close_work_cols = [
+        "_close_snapshot_utc_new",
+        "closing_player_decimal_odds",
+        "closing_opp_decimal_odds",
+        "closing_player_market_prob",
+        "closing_opp_market_prob",
+    ]
+    target_ledger = ledger.loc[target_mask].drop(
+        columns=close_work_cols,
+        errors="ignore",
+    )
+    merged = target_ledger.merge(
         close_snapshot[
             [
                 "match_id",
@@ -201,6 +212,7 @@ def finalize_close_snapshot(run_date: str, close_snapshot_path: Path) -> dict[st
         merged["closing_pick_market_prob"] - merged["current_pick_market_prob"]
     )
     merged["beat_close"] = merged["line_move_pick_to_close"] > 0
+    merged = merged.drop(columns=close_work_cols, errors="ignore")
 
     for col in merged.columns:
         if col not in ledger.columns:
