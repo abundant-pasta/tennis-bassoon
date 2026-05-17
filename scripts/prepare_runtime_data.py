@@ -27,6 +27,8 @@ def main() -> None:
     for rel in [
         Path("features/matches.parquet"),
         Path("features/rankings.parquet"),
+        Path("ledger/extended_matches.parquet"),
+        Path("ledger/extended_matches.date"),
         Path("model"),
         Path("raw/atp_players.csv"),
     ]:

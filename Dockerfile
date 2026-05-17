@@ -8,6 +8,8 @@ COPY scripts /app/scripts
 COPY config_tennis.py run_pipeline.py /app/
 COPY data/tennis/features/matches.parquet /opt/tennis-seed/data/tennis/features/matches.parquet
 COPY data/tennis/features/rankings.parquet /opt/tennis-seed/data/tennis/features/rankings.parquet
+COPY data/tennis/ledger/extended_matches.parquet /opt/tennis-seed/data/tennis/ledger/extended_matches.parquet
+COPY data/tennis/ledger/extended_matches.date /opt/tennis-seed/data/tennis/ledger/extended_matches.date
 COPY data/tennis/model /opt/tennis-seed/data/tennis/model
 COPY data/tennis/raw/atp_players.csv /opt/tennis-seed/data/tennis/raw/atp_players.csv
 

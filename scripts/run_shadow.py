@@ -145,11 +145,11 @@ def _resolve_rank(name: str, rankings: dict[str, int]) -> int | None:
 
 def _fetch_today_schedule(api_key: str, run_date: str) -> pd.DataFrame:
     """
-    Query all known ATP sport keys and return today's matches as a schedule
-    DataFrame ready for the daily runner.
+    Query all known ATP sport keys and return the run_date UTC match card as a
+    schedule DataFrame ready for the daily runner.
     """
-    today = pd.Timestamp(run_date).normalize()
-    tomorrow = today + pd.Timedelta(days=1)
+    run_start = pd.Timestamp(run_date).normalize().tz_localize("UTC")
+    run_end = run_start + pd.Timedelta(days=1)
 
     rows = []
     for meta in TOURNAMENTS:
@@ -171,11 +171,10 @@ def _fetch_today_schedule(api_key: str, run_date: str) -> pd.DataFrame:
         for event in data:
             commence = event.get("commence_time", "")
             try:
-                event_dt = pd.Timestamp(commence, tz="UTC").tz_convert("US/Eastern").normalize().tz_localize(None)
+                event_dt = pd.Timestamp(commence, tz="UTC")
             except Exception:
-                event_dt = pd.Timestamp(commence)
-            # include matches today or tomorrow (covers late US time zones)
-            if event_dt not in (today, tomorrow):
+                continue
+            if not (run_start <= event_dt < run_end):
                 continue
 
             player_name = event.get("home_team", "")
@@ -200,6 +199,26 @@ def _fetch_today_schedule(api_key: str, run_date: str) -> pd.DataFrame:
             })
 
     return pd.DataFrame(rows).drop_duplicates(subset=["match_id"])
+
+
+def _extended_match_cache_is_usable(ext_path: Path, ext_stamp: Path, run_date: str) -> bool:
+    if not ext_path.exists() or not ext_stamp.exists():
+        return False
+
+    try:
+        max_age_days = int(os.environ.get("TENNIS_EXTENDED_MATCH_DB_MAX_AGE_DAYS", "7"))
+    except ValueError:
+        max_age_days = 7
+    max_age_days = max(0, max_age_days)
+
+    try:
+        cache_date = pd.Timestamp(ext_stamp.read_text().strip()).date()
+        requested_date = pd.Timestamp(run_date).date()
+    except Exception:
+        return False
+
+    age_days = (requested_date - cache_date).days
+    return 0 <= age_days <= max_age_days
 
 
 # ---------------------------------------------------------------------------
@@ -256,8 +275,9 @@ def main() -> None:
     ext_path = Path(cfg.LEDGER_DIR) / "extended_matches.parquet"
     ext_stamp = Path(cfg.LEDGER_DIR) / "extended_matches.date"
     today_stamp = run_date[:10]
-    if ext_path.exists() and ext_stamp.exists() and ext_stamp.read_text().strip() == today_stamp:
-        print(f"Extended match DB up to date (built today). Reusing {ext_path}", flush=True)
+    if _extended_match_cache_is_usable(ext_path, ext_stamp, run_date):
+        cache_stamp = ext_stamp.read_text().strip()
+        print(f"Extended match DB cache is recent enough ({cache_stamp}). Reusing {ext_path}", flush=True)
     else:
         print("Building extended match DB (recent 2025/2026 history)...", flush=True)
         from src.model.tennis_backtest_2026_ytd import build_extended_matches

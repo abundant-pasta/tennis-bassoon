@@ -3,7 +3,7 @@
 This repo is set up to run the tennis shadow pipeline on Railway using two cron
 services from the same source repo:
 
-- `tennis-shadow-morning`
+- `tennis-shadow-daily`
 - `tennis-shadow-close`
 
 Railway cron services run the service start command on a schedule, then exit.
@@ -71,7 +71,7 @@ TENNIS_NOTIFICATION_WEBHOOK=...
 
 ## Service Commands
 
-Morning shadow picks service:
+Daily shadow picks service:
 
 ```bash
 bash scripts/railway_shadow.sh
@@ -87,29 +87,36 @@ bash scripts/railway_close_snapshot.sh
 
 Railway cron is `UTC`.
 
-If you want the runs at approximately `7:00 AM` and `9:00 PM` Denver time during
-daylight time (`MDT`, `UTC-6`), use:
+The shadow run should happen just after the UTC match day starts, not in the
+Denver morning. Tennis is global, and a `7:00 AM` Denver run is already after
+many European starts and can miss earlier Asia/Australia matches entirely.
 
-- Morning shadow: `0 13 * * *`
+Recommended schedules:
+
+- Daily shadow: `5 0 * * *`
 - Close snapshot: `0 3 * * *`
 
 Important:
 
-- When Denver moves to standard time (`MST`, `UTC-7`), those same UTC schedules
-  will fire one hour later locally.
-- If you want fixed local wall-clock times year-round, you will need to update
-  the UTC cron expressions at DST boundaries.
+- `5 0 * * *` runs at `00:05 UTC`, which is `6:05 PM` Denver on the previous
+  local date during daylight time (`MDT`, `UTC-6`) and `5:05 PM` during standard
+  time (`MST`, `UTC-7`).
+- The runner defaults `run_date` from UTC, so this is the cleanest daily boundary
+  for the current pipeline.
+- Railway cron settings live in Railway unless you add config-as-code; update the
+  service schedule there if it was already created with the older `0 13 * * *`
+  recommendation.
 
 ## Railway UI Steps
 
 1. Create a new project from this repo.
 2. Add a volume and mount it at `/app/persist`.
 3. Create the first service:
-   `tennis-shadow-morning`
+   `tennis-shadow-daily`
 4. Set its start command to:
    `bash scripts/railway_shadow.sh`
 5. Set its cron schedule to:
-   `0 13 * * *`
+   `5 0 * * *`
 6. Duplicate the service or create a second one from the same repo:
    `tennis-shadow-close`
 7. Set its start command to:
