@@ -262,6 +262,11 @@ def record_shadow_ledger(run_date: str, run_id: str, scored_df: pd.DataFrame) ->
     append_df = rows[keep_cols].copy()
     if ledger_path.exists():
         existing = pd.read_csv(ledger_path)
+        if not existing.empty and {"run_date", "match_id", "side"}.issubset(existing.columns):
+            keys = append_df[["run_date", "match_id", "side"]].astype(str)
+            existing_keys = existing[["run_date", "match_id", "side"]].astype(str)
+            duplicate_mask = existing_keys.apply(tuple, axis=1).isin(keys.apply(tuple, axis=1))
+            existing = existing.loc[~duplicate_mask].copy()
         append_df = pd.concat([existing, append_df], ignore_index=True)
     append_df.to_csv(ledger_path, index=False)
     return len(rows)

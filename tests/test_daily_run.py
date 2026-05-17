@@ -370,6 +370,41 @@ def test_close_snapshot_updates_shadow_ledger(tmp_path, monkeypatch):
     assert bool(ledger.loc[0, "beat_close"])
 
 
+def test_shadow_ledger_rerun_replaces_same_match_side(tmp_path, monkeypatch):
+    from src.pipeline.tennis_shadow_ledger import record_shadow_ledger
+
+    monkeypatch.setattr(
+        "src.pipeline.tennis_shadow_ledger.cfg.SHADOW_LEDGER_PATH",
+        tmp_path / "ledger" / "shadow_ledger.csv",
+    )
+    monkeypatch.setattr(
+        "src.pipeline.tennis_shadow_ledger.cfg.LEDGER_DIR",
+        tmp_path / "ledger",
+    )
+
+    scored = pd.DataFrame(
+        [
+            {
+                "match_id": "match-1",
+                "player_name": "Alpha One",
+                "opp_name": "Beta Two",
+                "side": "player",
+                "eligible": True,
+                "edge": 0.02,
+            }
+        ]
+    )
+    assert record_shadow_ledger("2026-01-10", "run-old", scored) == 1
+
+    scored.loc[0, "edge"] = 0.04
+    assert record_shadow_ledger("2026-01-10", "run-new", scored) == 1
+
+    ledger = pd.read_csv(tmp_path / "ledger" / "shadow_ledger.csv")
+    assert len(ledger) == 1
+    assert ledger.loc[0, "run_id"] == "run-new"
+    assert ledger.loc[0, "edge"] == 0.04
+
+
 def test_daily_run_supports_odds_api_adapter(tmp_path, monkeypatch):
     feature_cols = get_feature_columns()
     bundle_dir = tmp_path / "promoted" / "current"
