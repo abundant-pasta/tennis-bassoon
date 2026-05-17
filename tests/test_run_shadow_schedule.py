@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import importlib.util
+from datetime import time as dtime, timezone
 from pathlib import Path
 
 from src.data.tennis_odds_api import TournamentMeta
@@ -12,6 +13,14 @@ assert _SPEC is not None
 assert _SPEC.loader is not None
 run_shadow = importlib.util.module_from_spec(_SPEC)
 _SPEC.loader.exec_module(run_shadow)
+
+_COMBINED_SPEC = importlib.util.spec_from_file_location(
+    "run_shadow_and_close", _ROOT / "scripts" / "run_shadow_and_close.py"
+)
+assert _COMBINED_SPEC is not None
+assert _COMBINED_SPEC.loader is not None
+run_shadow_and_close = importlib.util.module_from_spec(_COMBINED_SPEC)
+_COMBINED_SPEC.loader.exec_module(run_shadow_and_close)
 
 
 class _FakeResponse:
@@ -88,3 +97,9 @@ def test_extended_match_cache_rejects_stale_stamp(tmp_path, monkeypatch):
     monkeypatch.setenv("TENNIS_EXTENDED_MATCH_DB_MAX_AGE_DAYS", "7")
 
     assert not run_shadow._extended_match_cache_is_usable(cache, stamp, "2026-05-17")
+
+
+def test_combined_runner_parses_close_snapshot_time():
+    assert run_shadow_and_close._parse_close_time("03:00") == dtime(
+        hour=3, minute=0, tzinfo=timezone.utc
+    )

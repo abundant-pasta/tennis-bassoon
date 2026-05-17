@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-python3 scripts/prepare_runtime_data.py
-exec python3 scripts/run_shadow.py
+exec python3 scripts/run_shadow_and_close.py

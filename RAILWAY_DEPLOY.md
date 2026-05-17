@@ -1,10 +1,9 @@
 # Railway Deploy
 
-This repo is set up to run the tennis shadow pipeline on Railway using two cron
-services from the same source repo:
+This repo is set up to run the tennis shadow pipeline on Railway using one cron
+service:
 
 - `tennis-shadow-daily`
-- `tennis-shadow-close`
 
 Railway cron services run the service start command on a schedule, then exit.
 Railway cron schedules are configured in `UTC`.
@@ -20,9 +19,9 @@ Sources:
 Create one Railway project with:
 
 - one attached volume
-- two services built from this repo
+- one service built from this repo
 
-Both services should mount the same volume.
+The service must mount the volume.
 
 Recommended mount path:
 
@@ -39,6 +38,11 @@ The pipeline writes:
 
 Those should survive container restarts.
 
+The daily shadow and close snapshot must use the same volume because the close
+snapshot updates `shadow_ledger.csv` created by the opening shadow run. Railway
+volumes are attached to a service, so the production setup uses one cron service
+that runs both phases in sequence instead of two separate cron services.
+
 The image also contains a seed copy of the immutable runtime prerequisites:
 
 - `matches.parquet`
@@ -49,9 +53,9 @@ The image also contains a seed copy of the immutable runtime prerequisites:
 At service start, `scripts/prepare_runtime_data.py` copies those seed artifacts
 into `TENNIS_DATA_DIR` only if they are missing.
 
-## Shared Environment Variables
+## Environment Variables
 
-Set these on both services:
+Set these on the service:
 
 ```bash
 ODDS_API_KEY=...
@@ -64,23 +68,20 @@ PYTHONUNBUFFERED=1
 Optional:
 
 ```bash
+TENNIS_CLOSE_SNAPSHOT_UTC=03:00
 TENNIS_UPLOAD_TO_GCS=true
 TENNIS_OUTPUT_BUCKET=...
 TENNIS_NOTIFICATION_WEBHOOK=...
 ```
 
-## Service Commands
+## Service Command
 
-Daily shadow picks service:
+The service command runs the opening shadow job, waits until the close snapshot
+time for the same UTC run date, then runs the close snapshot against the same
+mounted volume:
 
 ```bash
 bash scripts/railway_shadow.sh
-```
-
-Evening close snapshot service:
-
-```bash
-bash scripts/railway_close_snapshot.sh
 ```
 
 ## Cron Schedules
@@ -93,8 +94,7 @@ many European starts and can miss earlier Asia/Australia matches entirely.
 
 Recommended schedules:
 
-- Daily shadow: `5 0 * * *`
-- Close snapshot: `0 3 * * *`
+- Daily shadow + close snapshot: `5 0 * * *`
 
 Important:
 
@@ -103,6 +103,8 @@ Important:
   time (`MST`, `UTC-7`).
 - The runner defaults `run_date` from UTC, so this is the cleanest daily boundary
   for the current pipeline.
+- `scripts/run_shadow_and_close.py` defaults the close snapshot to `03:00 UTC`.
+  Set `TENNIS_CLOSE_SNAPSHOT_UTC=HH:MM` if this should move.
 - Railway cron settings live in Railway unless you add config-as-code; update the
   service schedule there if it was already created with the older `0 13 * * *`
   recommendation.
@@ -111,20 +113,14 @@ Important:
 
 1. Create a new project from this repo.
 2. Add a volume and mount it at `/app/persist`.
-3. Create the first service:
+3. Create the service:
    `tennis-shadow-daily`
 4. Set its start command to:
    `bash scripts/railway_shadow.sh`
 5. Set its cron schedule to:
    `5 0 * * *`
-6. Duplicate the service or create a second one from the same repo:
-   `tennis-shadow-close`
-7. Set its start command to:
-   `bash scripts/railway_close_snapshot.sh`
-8. Set its cron schedule to:
-   `0 3 * * *`
-9. Add the shared environment variables to both services.
-10. Trigger one manual deploy/run for each service and verify output under the
+6. Add the environment variables.
+7. Trigger one manual deploy/run and verify output under the
     mounted paths.
 
 ## Expected Persistent Paths
