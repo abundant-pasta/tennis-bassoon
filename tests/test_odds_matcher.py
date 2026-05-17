@@ -51,3 +51,47 @@ def test_odds_matcher_rejects_ambiguous_candidates():
     result = match_schedule_to_odds(schedule, odds)
     assert result.matched.empty
     assert list(result.rejected["rejection_reason"].unique()) == ["ambiguous_odds_match"]
+
+
+def test_odds_matcher_reorients_reversed_odds_pair():
+    schedule = pd.DataFrame(
+        [
+            {
+                "match_id": "m1",
+                "match_date": "2026-05-17",
+                "tourney_name": "Italian Open",
+                "surface": "Clay",
+                "round": "F",
+                "player_name": "Jannik Sinner",
+                "opp_name": "Casper Ruud",
+                "player_rank": 1,
+                "opp_rank": 25,
+                "best_of": 3,
+                "draw_size": 32,
+            }
+        ]
+    )
+    odds = pd.DataFrame(
+        [
+            {
+                "match_date": "2026-05-17",
+                "tourney_name": "Italian Open",
+                "surface": "Clay",
+                "round": "F",
+                "player_name": "Casper Ruud",
+                "opp_name": "Jannik Sinner",
+                "player_decimal_odds": 5.75,
+                "opp_decimal_odds": 1.15,
+            }
+        ]
+    )
+
+    result = match_schedule_to_odds(schedule, odds)
+
+    assert result.rejected.empty
+    row = result.matched.iloc[0]
+    assert row["player_name"] == "Jannik Sinner"
+    assert row["opp_name"] == "Casper Ruud"
+    assert row["player_decimal_odds"] == 1.15
+    assert row["opp_decimal_odds"] == 5.75
+    assert row["novig_player_prob"] > row["novig_opp_prob"]

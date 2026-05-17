@@ -68,11 +68,14 @@ def match_schedule_to_odds(
     )
     merged["odds_match_confidence"] = (1.0 - merged["raw_penalty"]).clip(lower=0.0, upper=1.0)
 
+    same_orientation = merged["_player_norm"] == merged["_player_norm_odds"]
+    reversed_orientation = merged["_player_norm"] == merged["_opp_norm_odds"]
     valid = merged[
         merged["player_decimal_odds"].notna()
         & merged["opp_decimal_odds"].notna()
         & merged["surface_match"]
         & (merged["date_distance_days"] <= max_date_distance_days)
+        & (same_orientation | reversed_orientation)
     ].copy()
 
     if valid.empty:
@@ -80,6 +83,12 @@ def match_schedule_to_odds(
         rejected["rejection_reason"] = "no_valid_odds_candidate"
         rejected["odds_match_confidence"] = 0.0
         return MatchResult(matched=schedule.iloc[0:0].copy(), rejected=rejected)
+
+    same_orientation = valid["_player_norm"] == valid["_player_norm_odds"]
+    raw_player_odds = valid["player_decimal_odds"].copy()
+    raw_opp_odds = valid["opp_decimal_odds"].copy()
+    valid["player_decimal_odds"] = np.where(same_orientation, raw_player_odds, raw_opp_odds)
+    valid["opp_decimal_odds"] = np.where(same_orientation, raw_opp_odds, raw_player_odds)
 
     valid = valid.sort_values(
         ["_row_id", "raw_penalty", "date_distance_days", "_candidate_id"],
